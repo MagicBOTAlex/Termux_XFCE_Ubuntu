@@ -120,7 +120,7 @@ main() {
     fi
 
     echo -e "\n${GREEN}This will install XFCE native desktop in Termux"
-    echo -e "${GREEN}A Debian proot-distro is also installed for additional software"
+    echo -e "${GREEN}A Ubuntu proot-distro is also installed for additional software"
     echo -e "${GREEN}while also enabling hardware acceleration"
     echo -e "${GREEN}This setup has been tested on a Samsung Galaxy S24 Ultra"
     echo -e "${GREEN}It should run on most phones however.${NC}"
@@ -194,7 +194,7 @@ fi
 
 # Set aliases
 echo "
-alias debian='proot-distro login debian --user $username --shared-tmp'
+alias ubuntu='proot-distro login ubuntu --user $username --shared-tmp'
 alias ls='eza -lF --icons'
 alias cat='bat '
 
@@ -528,7 +528,7 @@ EOF
 # Create bookmarks with custom name
 cat <<EOF > $HOME/.config/gtk-3.0/bookmarks
 file:////data/data/com.termux/files/home/Downloads
-file:///data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/debian/home/$username Debian Home
+file:///data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username Ubuntu Home
 file:////data/data/com.termux/files/home/storage/shared/ Android Storage
 EOF
 
@@ -742,8 +742,8 @@ mv $HOME/Desktop/kill_termux_x11.desktop $PREFIX/share/applications
 # Create prun script
 cat <<'EOF' > $PREFIX/bin/prun
 #!/bin/bash
-varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/*)
-pd login debian --user $varname --shared-tmp -- env DISPLAY=:0 $@
+varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/*)
+pd login ubuntu --user $varname --shared-tmp -- env DISPLAY=:0 $@
 
 EOF
 chmod +x $PREFIX/bin/prun
@@ -751,8 +751,8 @@ chmod +x $PREFIX/bin/prun
 # Create zrun script
 cat <<'EOF' > $PREFIX/bin/zrun
 #!/bin/bash
-varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/*)
-pd login debian --user $varname --shared-tmp -- env DISPLAY=:0 MESA_LOADER_DRIVER_OVERRIDE=zink TU_DEBUG=noconform $@
+varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/*)
+pd login ubuntu --user $varname --shared-tmp -- env DISPLAY=:0 MESA_LOADER_DRIVER_OVERRIDE=zink TU_DEBUG=noconform $@
 
 EOF
 chmod +x $PREFIX/bin/zrun
@@ -760,8 +760,8 @@ chmod +x $PREFIX/bin/zrun
 # Create zrunhud script
 cat <<'EOF' > $PREFIX/bin/zrunhud
 #!/bin/bash
-varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/*)
-pd login debian --user $varname --shared-tmp -- env DISPLAY=:0 MESA_LOADER_DRIVER_OVERRIDE=zink TU_DEBUG=noconform GALLIUM_HUD=fps $@
+varname=$(basename $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/*)
+pd login ubuntu --user $varname --shared-tmp -- env DISPLAY=:0 MESA_LOADER_DRIVER_OVERRIDE=zink TU_DEBUG=noconform GALLIUM_HUD=fps $@
 
 EOF
 chmod +x $PREFIX/bin/zrunhud
@@ -805,27 +805,27 @@ StartupNotify=false
 " > $PREFIX/share/applications/cp2menu.desktop
 chmod +x $PREFIX/share/applications/cp2menu.desktop
 
-# Install Debian proot
+# Install Ubuntu proot
 pkgs_proot=('sudo' 'onboard' 'conky-all' 'flameshot')
 
-# Install Debian proot
-pd install debian
-pd login debian --shared-tmp -- env DISPLAY=:0 apt update
-pd login debian --shared-tmp -- env DISPLAY=:0 apt upgrade -y
-pd login debian --shared-tmp -- env DISPLAY=:0 apt install "${pkgs_proot[@]}" -y -o Dpkg::Options::="--force-confold"
+# Install Ubuntu proot
+pd install ubuntu
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 apt update
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 apt upgrade -y
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 apt install "${pkgs_proot[@]}" -y -o Dpkg::Options::="--force-confold"
 
 # Create user
-pd login debian --shared-tmp -- env DISPLAY=:0 groupadd storage
-pd login debian --shared-tmp -- env DISPLAY=:0 groupadd wheel
-pd login debian --shared-tmp -- env DISPLAY=:0 useradd -m -g users -G wheel,audio,video,storage -s /bin/bash "$username"
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 groupadd storage
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 groupadd wheel
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 useradd -m -g users -G wheel,audio,video,storage -s /bin/bash "$username"
 
 # Add user to sudoers
-chmod u+rw $PREFIX/var/lib/proot-distro/installed-rootfs/debian/etc/sudoers
-echo "$username ALL=(ALL) NOPASSWD:ALL" | tee -a $PREFIX/var/lib/proot-distro/installed-rootfs/debian/etc/sudoers > /dev/null
-chmod u-w  $PREFIX/var/lib/proot-distro/installed-rootfs/debian/etc/sudoers
+chmod u+rw $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/sudoers
+echo "$username ALL=(ALL) NOPASSWD:ALL" | tee -a $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/sudoers > /dev/null
+chmod u-w  $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/etc/sudoers
 
 # Set proot DISPLAY
-echo "export DISPLAY=:0" >> $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.bashrc
+echo "export DISPLAY=:0" >> $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.bashrc
 
 # Set aliases
 echo "
@@ -833,40 +833,40 @@ alias ls='eza -lF --icons'
 alias cat='bat '
 
 eval "$(starship init bash)"
-" >> $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.bashrc
+" >> $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.bashrc
 
 # Set proot timezone
 timezone=$(getprop persist.sys.timezone)
-pd login debian --shared-tmp -- env DISPLAY=:0 rm /etc/localtime
-pd login debian --shared-tmp -- env DISPLAY=:0 cp /usr/share/zoneinfo/$timezone /etc/localtime
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 rm /etc/localtime
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 cp /usr/share/zoneinfo/$timezone /etc/localtime
 
 # Setup Hardware Acceleration in proot
-pd login debian --shared-tmp -- env DISPLAY=:0 wget https://github.com/phoenixbyrd/Termux_XFCE/raw/main/mesa-vulkan-kgsl_24.1.0-devel-20240120_arm64.deb
-pd login debian --shared-tmp -- env DISPLAY=:0 sudo apt install -y ./mesa-vulkan-kgsl_24.1.0-devel-20240120_arm64.deb
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 wget https://github.com/phoenixbyrd/Termux_XFCE/raw/main/mesa-vulkan-kgsl_24.1.0-devel-20240120_arm64.deb
+pd login ubuntu --shared-tmp -- env DISPLAY=:0 sudo apt install -y ./mesa-vulkan-kgsl_24.1.0-devel-20240120_arm64.deb
 
-mkdir -p $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.config/
+mkdir -p $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.config/
 
 # Download proot starship theme
-curl -o $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.config/starship.toml https://raw.githubusercontent.com/phoenixbyrd/Termux_XFCE/refs/heads/main/starship_proot.toml
-sed -i "s/phoenixbyrd/$username/" $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.config/starship.toml
+curl -o $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.config/starship.toml https://raw.githubusercontent.com/phoenixbyrd/Termux_XFCE/refs/heads/main/starship_proot.toml
+sed -i "s/phoenixbyrd/$username/" $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.config/starship.toml
 
 # Apply cursor theme
-cp -r $PREFIX/share/icons/dist-dark $PREFIX/var/lib/proot-distro/installed-rootfs/debian/usr/share/icons/dist-dark
-cat <<'EOF' > $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.Xresources
+cp -r $PREFIX/share/icons/dist-dark $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/usr/share/icons/dist-dark
+cat <<'EOF' > $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.Xresources
 Xcursor.theme: dist-dark
 EOF
 
 wget https://github.com/phoenixbyrd/Termux_XFCE/raw/main/conky.tar.gz
 tar -xvzf conky.tar.gz
 rm conky.tar.gz
-mv $HOME/.config/conky/ $PREFIX/var/lib/proot-distro/installed-rootfs/debian/home/$username/.config/
+mv $HOME/.config/conky/ $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/$username/.config/
 
 # Conky
-cp $PREFIX/var/lib/proot-distro/installed-rootfs/debian/usr/share/applications/conky.desktop $HOME/.config/autostart/
+cp $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/usr/share/applications/conky.desktop $HOME/.config/autostart/
 sed -i 's|^Exec=.*$|Exec=prun conky -c .config/conky/Alterf/Alterf.conf|' $HOME/.config/autostart/conky.desktop
 
 # Flameshot
-cp $PREFIX/var/lib/proot-distro/installed-rootfs/debian/usr/share/applications/org.flameshot.Flameshot.desktop $HOME/.config/autostart/
+cp $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/usr/share/applications/org.flameshot.Flameshot.desktop $HOME/.config/autostart/
 sed -i 's|^Exec=.*$|Exec=prun flameshot|' $HOME/.config/autostart/org.flameshot.Flameshot.desktop
 
 chmod +x $HOME/.config/autostart/*.desktop
@@ -886,14 +886,14 @@ echo -e "${GREEN}Available Commands:${NC}"
 echo -e "${YELLOW}start${NC}"
 echo -e "Launches the XFCE desktop environment with hardware acceleration enabled\n"
 
-echo -e "${YELLOW}debian${NC}"
-echo -e "Enters the Debian proot environment for installing additional aarch64 packages\n"
+echo -e "${YELLOW}ubuntu${NC}"
+echo -e "Enters the Ubuntu proot environment for installing additional aarch64 packages\n"
 
 echo -e "${YELLOW}prun${NC}"
-echo -e "Executes Debian proot applications directly from Termux\n"
+echo -e "Executes Ubuntu proot applications directly from Termux\n"
 
 echo -e "${YELLOW}zrun${NC}"
-echo -e "Runs Debian applications with hardware acceleration enabled\n"
+echo -e "Runs Ubuntu applications with hardware acceleration enabled\n"
 
 echo -e "${YELLOW}zrunhud${NC}"
 echo -e "Same as zrun but includes an FPS overlay for performance monitoring\n"
